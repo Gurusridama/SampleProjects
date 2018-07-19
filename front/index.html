@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>bulma example</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.1/css/bulma.min.css"/>
+	<script src="https://unpkg.com/vue@2.5.8/dist/vue.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.16.2/axios.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+	<!-- <link rel="stylesheet" href="./css/font-awesome.min.css"/> -->
+	<link rel="stylesheet" href="./css/bulma.min.css"/>
+	<script src="./js/vue.js"></script>
+	<script src="./js/axios.min.js"></script>
+	<script src="./js/jquery.min.js"></script>
+</head>
+<body>
+<div id="main" v-cloak>
+<section class="hero is-primary is-medium">
+   	<div class="">
+   		<div class="container">
+	     	<h1 class="title is-1">
+	        	List Of Business Mans
+	        	<a href="post_customer_details.html" class="button is-info" style="margin-left: 92%;">Add New</a>
+	     	</h1>
+	     	<h2 class="subtitle">
+	        	Like your favorites
+	     	</h2>
+	 	</div>
+   	</div>
+</section>
+
+<section class="section" >
+	
+    <div class="container">
+    	<div class="columns">
+			<div class="column">
+
+				<div class="field">
+				  <p class="control has-icons-right">
+				    <input class="input is-rounded" v-model="search" type="text" placeholder="Enter Name">
+				    <span class="icon is-small is-right">
+				      <i class="fa fa-search"></i>
+				    </span>
+				  </p>
+				</div>			
+			</div>
+		</div>
+
+    	<div class="columns is-multiline">
+    		<div class="column is-one-fouth" v-for="(customer, i) in filteredCustomers">
+    			<div class="card">
+				    <div class="card-content">
+				        <h2 class="title">{{customer.NAME}}</h2> 
+				        <h3 class="subtitle">{{customer.ADDRESS}}</h3>
+				    </div>
+				    <footer class="card-footer">
+				        <span class="card-footer-item">
+				            <a @click="like(i)" class="button is-success">
+				                <i class="fa fa-thumbs-o-up"><span v-if="customer.likes!=='null'">{{liked(customer.likes)}}</span></i>
+				            </a>
+				        </span>
+				        <span class="card-footer-item"> 
+				            <a @click="dislike(i)" class="button is-danger">
+				                <i class="fa fa-thumbs-o-down"><span v-if="customer.dislikes!=='null'">{{liked(customer.dislikes)}}</span></i>
+				            </a>
+				        </span>
+				        <span class="card-footer-item">
+				            <a @click="refresh(i)" class="button is-info">
+				                <i class="fa fa-retweet"></i>
+				            </a>
+				        </span>
+				    </footer>
+				</div>
+    		</div>
+    	</div>
+    </div>
+</section>
+</div>
+</body>
+</html>
+
+<script>
+	var demo = new Vue({
+	    el: '#main',
+	    data : {
+	    	alldata: [],
+	    	search: ''
+	    },
+	    created () {
+	    	 /*$.ajax({
+	            type: 'GET',
+	            dataType: 'json',
+	            url: "http://localhost:1600/getdata/getcustomerdata",
+	            success:function(data){
+	             this.alldata = data
+	             console.log(this.alldata)
+	            }
+	            http://localhost:1600/getdata/getcustomer?uid=1
+	        });*/
+	    	 axios.get(`http://localhost:1600/getdata/getcustomerdata`)
+		      .then(response => {
+		        if (response.data.length > 0) {
+		          this.alldata = response.data
+		          console.log(this.alldata)
+		        }
+		      })
+		      .catch(e => {
+		        this.errors.push(e)
+		      })
+	    },
+	    computed:
+		{
+		    filteredCustomers:function()
+		    {
+		    	var self=this;
+		        return this.alldata.filter(function(cust){return cust.NAME.toLowerCase().indexOf(self.search.toLowerCase())>=0;});
+		       //return this.customers;
+		    }
+		},
+	    methods: {
+	    	like (i) {
+	    		var id=this.alldata[i].ID;
+		        $.ajax({
+		           type: "POST",
+		           dataType: 'json',
+		           url: "http://localhost:1600/postcdata/likes?user_id="+id,
+		           success: function(data)
+		           {
+	           			axios.get(`http://localhost:1600/getdata/getcustomerdata`)
+				      	.then(response => {
+					        if (response.data.length > 0) {
+					          this.alldata = response.data
+					        }
+				      	})
+		           }
+		        });
+		 	},
+		 	dislike (i) {
+	    		var id=this.alldata[i].ID;
+		        $.ajax({
+		           type: "POST",
+		           dataType: 'json',
+		           url: "http://localhost:1600/postcdata/dislikes?user_id="+id,
+		           success: function(data)
+		           {
+		               axios.get(`http://localhost:1600/getdata/getcustomerdata`)
+					      	.then(response => {
+						        if (response.data.length > 0) {
+						          this.alldata = response.data
+						        }
+					    }) 
+		           }
+		        });
+		 	},
+		 	liked (like) {
+		 		return like
+		 	},
+		 	refresh (i) {
+		 		axios.get(`http://localhost:1600/getdata/getcustomerdata`)
+			      	.then(response => {
+				        if (response.data.length > 0) {
+				          this.alldata = response.data
+				        }
+				}) 
+
+		 		this.liked(this.alldata[i].likes)
+		 		this.liked(this.alldata[i].dislikes)
+		 	}	
+	    }
+	})
+	
+
+
+
+	  	
+</script>

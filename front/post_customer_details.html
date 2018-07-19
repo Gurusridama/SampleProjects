@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Customer Reg</title>
+	<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/js/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.1/css/bulma.min.css"/> -->
+	<script src="./js/jquery.min.js"></script>
+	<link rel="stylesheet" href="./css/font-awesome.min.css"/>
+	<link rel="stylesheet" href="./css/bulma.min.css"/>
+</head>
+<body>
+	<section class="hero is-primary">
+	   	<div class="hero-body">
+	   		<div class="container">
+		     	<h1 class="title is-1">
+		        	Customer Registration
+		     	</h1>
+		     	<h2 class="subtitle">
+		        	For New customer
+		     	</h2>
+		 	</div>
+	   	</div>
+	</section>
+
+	<section class="section">
+    <div class="container">
+    	<div class="columns">
+    		<div class="column">
+    			<div class="card">
+				    <div class="card-content">
+				    	<div class="field">
+  							<div class="control">
+  								<input class="input" type="text" name="Name" id="name" placeholder="Enter Name">
+  							</div>
+  						</div>
+
+  						<div class="field">
+  							<div class="control">
+  								<input class="input" type="text" name="Age" id="age" placeholder="Enter Age">
+  							</div>
+  						</div>
+  						<div class="field">
+  							<div class="control">
+  								<textarea class="textarea" id="address" placeholder="Enter Address"></textarea>
+  							</div>
+  						</div>
+  						<div class="field">
+  							<div class="control">
+  								<input class="input" type="text" name="Salary" id="salary" placeholder="Enter Salary">
+  							</div>
+  						</div>
+  						<div class="field">
+  							<div class="control">
+  								<div class="columns">
+	  								<div class="column">
+	  								</div>
+	  								<div class="column is-centered">
+	  								<button class="button is-success" onclick="myFunction()">Submit</button>
+	  								</div>
+	  								<div class="column">
+	  								</div>
+  								</div>
+  							</div>
+  						</div>
+				    </div>
+				</div>
+			</div>
+    	</div>
+    </div>
+    </section>
+</body>
+
+</html>
+
+<script>
+	function myFunction() {
+	    var name = document.getElementById("name").value;
+	    var age = document.getElementById("age").value;
+	    var address = document.getElementById("address").value;
+	    var salary = document.getElementById("salary").value;
+	    
+	    var formdata={
+	    	"name" : name,
+	    	"age" : age,
+	    	"address" : address,
+	    	"salary" : salary
+	    };
+
+
+	    $.ajax({
+           type: "POST",
+           dataType: 'json',
+           url: "http://localhost:1600/postcdata/postcustomer",
+           data: formdata, 
+           success: function(data)
+           {
+               alert(data); 
+           }
+         });
+
+	}
+</script>
